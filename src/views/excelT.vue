@@ -2,29 +2,29 @@
   <div id="excel">
   	<h2>Excel数据导入测试</h2>
   	<el-upload
-			class="upload-excel"
-			action=""
-			:multiple="false"
-			:show-file-list="false"
-			:http-request="httpRequest"
-			accept="csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-			<el-button size="small" type="primary">Excel导入数据</el-button>
-		</el-upload>
+		class="upload-excel"
+		action=""
+		:multiple="false"
+		:show-file-list="false"
+		:http-request="httpRequest"
+		accept="csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+		<el-button size="small" type="primary">Excel导入数据</el-button>
+	</el-upload>
 
-		<!--表一：简单展示数据-->
-  	<div class="review-list">
-	  	<h4>Excel数据显示</h4>
-	  	<div class="upload-btns">
+	<!--表一：简单展示数据-->
+	<div class="review-list">
+		<h4>Excel数据显示</h4>
+		<div class="upload-btns">
 	  		<el-popconfirm title="确定重置吗？" @onConfirm="clearExcelTable1">
-					<el-button slot="reference" type="primary" size="small">重置</el-button>
-				</el-popconfirm>
-				<el-button type="primary" size="small" @click="printData1">打印数据</el-button>
-	  	</div>
+				<el-button slot="reference" type="primary" size="small">重置</el-button>
+			</el-popconfirm>
+			<el-button type="primary" size="small" @click="printData1">打印数据</el-button>
+		</div>
 			<el-table :data="tableData1" border style="width: 100%;margin-top:10px">
 				<el-table-column v-if="tableData1.length > 0" type="index" :label="'编号'" :width="50"></el-table-column>
-	      <el-table-column v-for="(col, idx) in tableCols1" :key="idx" :prop="col" :label="col">
-	      </el-table-column>
-	    </el-table>
+			<el-table-column v-for="(col, idx) in tableCols1" :key="idx" :prop="col" :label="col">
+			</el-table-column>
+		</el-table>
     </div>
 
 		<!--表二：展示并可编辑数据-->
@@ -156,7 +156,6 @@ export default {
 		},
 		/*导出excel数据*/
 		formExcelData() {
-			console.log('...');
 			var tCols = [], tColsTemp = [], tDatas = [];
 			this.tableCols.forEach(p => {
 				tColsTemp.push(p.col);
