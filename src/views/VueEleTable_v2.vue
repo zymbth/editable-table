@@ -72,20 +72,21 @@ export default {
         {name: '张三',ageageageage: 24,city: '广州',tel: '13312345678'},
         {name: '李四',ageageageage: 25,city: '九江',tel: '18899998888'}
 			],
-			showMenu: false,       // 显示右键菜单
-      showEditInput: false,   // 显示内容编辑输入框
+			showMenu: false,             // 显示右键菜单
+      showEditInput: false,        // 显示内容编辑输入框
       showHeaderEditInput: false,  // 显示内容编辑输入框
-      curRowIndex: null,     // 待编辑row index
-      curColIndex: null,     // 待编辑col index
+      curRowIndex: null,           // 待编辑行下标
+      curColIndex: null,           // 待编辑列下标
       curHeaderIndex: null,
-      edInput: {             // 内容编辑数据
+      edInput: {                   // 内容编辑数据
         tag: '', // 列名
         val: ''  // 单元格值
       },
-      countCol: 0,          // 新建列计数
+      countCol: 0,                 // 新建列计数
 	 }
   },
 	methods:{
+    /* 添加表格行下标 */
     tableRowClassName({row, rowIndex}) {
       row.row_index = rowIndex
     },
@@ -196,6 +197,7 @@ export default {
 			this.testDatas.map(p => { delete p[delCol] })
 		},
 
+    /* 打印表格数据 */
 		consoleDatas() {
 			console.log('表头',this.testCols.toString());
 			console.log('数据', JSON.stringify(this.testDatas));
