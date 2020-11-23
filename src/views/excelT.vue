@@ -92,7 +92,8 @@ export default {
 					var bytes = new Uint8Array(reader.result);
 					var length = bytes.byteLength;
 					for(var i = 0; i < length; i++) binary += String.fromCharCode(bytes[i]);
-					var XLSX = require('xlsx');
+					// var XLSX = require('xlsx');
+					var XLSX = _this.$XLSX
 					if(rABS) wb = XLSX.read(btoa(fixdata(binary)), {type: 'base64'}); //手动转化
 					else wb = XLSX.read(binary, { type: 'binary' });
 					outdata = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval: ''}); //outdata的格式可打印了自行查看
