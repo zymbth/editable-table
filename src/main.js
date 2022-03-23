@@ -1,24 +1,11 @@
-import Vue from 'vue'
-import App from './App'
+import { createApp } from 'vue'
+import ElementPlus from 'element-plus'
+import locale from 'element-plus/lib/locale/lang/zh-cn'
+import App from './App.vue'
 import router from './router'
-// import ElementUI from 'element-ui'
-// import 'element-ui/lib/theme-chalk/index.css'
-import XLSX from 'xlsx'
+import '@/assets/index.scss'
 
-
-Vue.config.productionTip = false
-
-// Vue.use(ElementUI);
-
-Vue.prototype.$XLSX = XLSX
-/* eslint-disable no-new */
-// new Vue({
-//   el: '#app',
-//   router,
-//   components: { App },
-//   template: '<App/>'
-// })
-new Vue({
-  router,
-  render: h => h(App)
-}).$mount('#app')
+const app = createApp(App)
+app.use(ElementPlus, { locale })
+app.use(router)
+app.mount('#app')

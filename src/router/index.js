@@ -1,35 +1,32 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Home from '@/views/index.vue'
-import VueEleTable from '@/views/VueEleTable'
-import VueEleTable_v2 from '@/views/VueEleTable_v2'
-import VueEleTable_v2_process from '@/views/VueEleTable_v2_process'
-import ExcelT from '@/views/excelT'
+import { createRouter, createWebHashHistory } from 'vue-router'
+import Home from '@/views/Home.vue'
 
-Vue.use(Router)
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: Home
+  },
+  {
+    path: '/excel',
+    name: 'Excel',
+    component: () => import('@/views/excelT.vue')
+  },
+  {
+    path: '/edit-tb',
+    name: 'Editable',
+    component: () => import('@/views/editable-table.vue')
+  },
+  {
+    path: '/edit-tb-v2',
+    name: 'EditableV2',
+    component: () => import('@/views/editable-table-v2.vue')
+  }
+]
 
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: Home
-    },{
-      path: '/excel',
-      name: 'excel',
-      component: ExcelT
-    },{
-      path: '/editable',
-      name: 'editable',
-      component: VueEleTable
-    },{
-      path: '/editable_v2',
-      name: 'editable_v2',
-      component: VueEleTable_v2
-    },{
-      path: '/editable_v2_process',
-      name: 'editable_v2_process',
-      component: VueEleTable_v2_process
-    },
-  ]
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes
 })
+
+export default router
