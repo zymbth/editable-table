@@ -8,9 +8,9 @@
       :data="testDatas"
       border
       style="width: 100%;margin-top:10px"
-      @row-contextmenu="rightClick"
       @cell-dblclick="cellDblclick"
       @header-contextmenu="(column, event) => rightClick(null, column, event)"
+      @row-contextmenu="rightClick"
       :row-class-name="tableRowClassName"
     >
       <el-table-column v-if="testCols.length > 0" type="index" :label="'编号'" :width="50"/>
@@ -24,8 +24,8 @@
     </el-table>
     <p style="text-align:left;color:#ccc;">右键菜单，双击编辑</p>
 
-    <!-- 实时数据展示 -->
     <div>
+      <h3 style="text-align:center;">实时数据展示</h3>
       <label>当前目标：</label>
       <p>{{JSON.stringify(curTarget)}}</p>
       <label>表头：</label>
@@ -45,8 +45,9 @@
           <el-button type="primary" size="mini">删除当前列</el-button>
 		    </template>
       </el-popconfirm>
-
-      <div v-show="curTarget.rowIdx !== null">
+      <el-button size="mini" type="primary" @click="renameCol($event)">更改列名</el-button>
+      <div v-show="!curTarget.isHead">
+        <hr/>
         <el-button size="mini" type="primary" @click="addRow()">上方插入一行</el-button>
         <el-button size="mini" type="primary" @click="addRow(true)">下方插入一行</el-button>
         <el-popconfirm title="确定删除该行吗？" @confirm="delRow">
@@ -55,9 +56,6 @@
 		      </template>
         </el-popconfirm>
       </div>
-
-      <el-button size="mini" type="primary" @click="renameCol($event)">更改列名</el-button>
-
     </div>
 
     <!-- 单元格/表头内容编辑框 -->
@@ -99,6 +97,7 @@ export default {
       this.showEditInput = false
       if(column.index == null) return
       this.locateMenuOrEditInput('editInput', 200, event) // 编辑框定位
+      this.showEditInput = true
       // 当前目标
       this.curTarget = {
         rowIdx: row.row_index,
@@ -107,7 +106,6 @@ export default {
         val: row[column.property],
         isHead: false
       }
-      this.showEditInput = true
     },
     // 单元格/表头右击事件 - 打开菜单
     rightClick(row, column, event) {
@@ -116,6 +114,7 @@ export default {
       this.showMenu = false
       if(column.index == null) return
       this.locateMenuOrEditInput('contextmenu', 140, event) // 菜单定位
+      this.showMenu = true
       // 当前目标
       this.curTarget = {
         rowIdx: row ? row.row_index : null, // 目标行下标，表头无 row_index
@@ -124,7 +123,6 @@ export default {
         val: row ? row[column.property] : column.label, // 目标值，表头记录名称
         isHead: !row
       }
-      this.showMenu = true
     },
     // 去更改列名
     renameCol($event) {
@@ -156,10 +154,9 @@ export default {
     // 新增行
     addRow(later) {
       this.showMenu = false
-      if(this.curTarget.rowIdx === null) return
       const idx = later ? this.curTarget.rowIdx + 1 : this.curTarget.rowIdx
       let obj = {}
-      this.testCols.forEach(p => { obj[p] = '' })
+      this.testCols.forEach(p => obj[p] = '')
       this.testDatas.splice(idx, 0, obj)
     },
     // 删除行
@@ -169,10 +166,7 @@ export default {
     },
     // 新增列
     addColumn(later) {
-      console.log(later)
-      // debugger
       this.showMenu = false
-      if(this.curTarget.colIdx === null) return
       const idx = later ? this.curTarget.colIdx + 1 : this.curTarget.colIdx
       const colStr = 'col_' + ++this.countCol
       this.testCols.splice(idx, 0, colStr)
@@ -198,10 +192,6 @@ export default {
         ele.style.right = 0
       }
     },
-    // 生成key
-    generateRandomKey() {
-      return Math.random().toString(36).slice(2)
-    },
   },
 }
 </script>
@@ -219,9 +209,9 @@ export default {
   background-color: #f4f4f4;
   padding: 10px;
   z-index: 12;
-  button {display: block;margin: 0 0 5px;}
+  button {display:block;margin:0 0 5px;}
 }
-.hideContextMenu {position: absolute;top: 5px;right: 5px;}
+.hideContextMenu {position:absolute;top:5px;right:5px;}
 #editInput,#headereditInput {
   position:absolute;
   top: 0;
