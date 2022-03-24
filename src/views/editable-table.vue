@@ -40,7 +40,7 @@
       	</template>
       </el-table-column>
   	</el-table>
-    <!-- <p style="text-align:left;color:#ccc;">右键菜单，双击编辑</p> -->
+    <p style="text-align:left;color:#ccc;">右键菜单，双击编辑</p>
 
     <div>
       <h3 style="text-align:center;">实时数据展示</h3>
