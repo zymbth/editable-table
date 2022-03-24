@@ -7,6 +7,7 @@ Switch to branch "vue2" to fetch the code based on Vue2 & ElementUI
 ## 1. Editable-Table
 
 > Editable table based on Vue3 & Element Plus
+> 
 > Solution One:
 
 ![preview](documentation/editable_table.jpg)
