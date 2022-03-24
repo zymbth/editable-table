@@ -1,23 +1,27 @@
-# Demos about Table and Excel
+# Demos about "Editable-Table" and "Excel's Import and Export" Based on Vue3 & Element Plus
 
-> Convert excel data to table
->
-> Generate excel file from table
+示例：可编辑表格、Excel表格导入导出
 
-![preview](documentation/excel_table.png)
+Switch to branch "vue2" to fetch the code based on Vue2 & ElementUI
 
-> Editable table based on Vue & Element Plus
+## 1. Editable-Table
+
+> Editable table based on Vue3 & Element Plus
 > Solution One:
 
-![preview](documentation/editable_table.png)
+![preview](documentation/editable_table.jpg)
 
 > Solution Two:
 
 ![preview](documentation/editable_table_v2.png)
 
-## Code based on Vue2 & ElementUI
+## 2. Excel's Import and Export
 
-switch to branch "vue2" to fetch the code
+> Convert excel data to table
+> Generate excel file from table
+
+![preview](documentation/excel_table.png)
+
 
 ## Project setup
 ```
