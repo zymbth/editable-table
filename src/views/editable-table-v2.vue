@@ -13,12 +13,12 @@
       @row-contextmenu="rightClick"
       :row-class-name="tableRowClassName"
     >
-      <el-table-column v-if="testCols.length > 0" type="index" :label="'编号'" :width="50"/>
+      <el-table-column v-if="columnList.length > 0" type="index" :label="'编号'" :width="50"/>
       <el-table-column
-        v-for="(col,idx) in testCols"
-        :key="col"
-        :prop="col"
-        :label="col"
+        v-for="(col,idx) in columnList"
+        :key="col.prop"
+        :prop="col.prop"
+        :label="col.label"
         :index="idx"
       />
     </el-table>
@@ -29,7 +29,7 @@
       <label>当前目标：</label>
       <p>{{JSON.stringify(curTarget)}}</p>
       <label>表头：</label>
-      <p>{{testCols.toString()}}</p>
+      <p v-for="col in columnList" :key="col.prop">{{JSON.stringify(col)}}</p>
       <label>数据：</label>
       <p v-for="(data,idx) in testDatas" :key="idx">{{JSON.stringify(data)}}</p>
     </div>
@@ -61,7 +61,7 @@
     <!-- 单元格/表头内容编辑框 -->
     <div v-show="showEditInput" id="editInput" @mouseleave="showEditInput=false">
       <el-input placeholder="请输入内容" v-model="curTarget.val" clearable @change="updTbCellOrHeader">
-        <template #prepend>{{curTarget.tag}}</template>
+        <template #prepend>{{curTarget.colProp}}</template>
       </el-input>
     </div>
 
@@ -73,10 +73,15 @@ export default {
   name: 'demo',
   data(){
     return{
-      testCols: ["name", "ageageageage", "city", "tel"],
+      columnList: [
+        { prop: "name", label: 'name' },
+        { prop: "age", label: 'ageageageage' },
+        { prop: "city", label: 'city' },
+        { prop: "tel", label: 'tel' }
+      ],
       testDatas: [
-        { name: '张三', ageageageage: 24, city: '广州', tel: '13312345678' },
-        { name: '李四', ageageageage: 25, city: '九江', tel: '18899998888' }
+        { name: '张三', age: 24, city: '广州', tel: '13312345678' },
+        { name: '李四', age: 25, city: '九江', tel: '18899998888' }
       ],
       showMenu: false,             // 显示右键菜单
       showEditInput: false,        // 显示单元格/表头内容编辑输入框
@@ -84,8 +89,8 @@ export default {
       curTarget: {                 // 当前目标信息
         rowIdx: null,              // 行下标
         colIdx: null,              // 列下标
-        tag: null,                 // 名
-        val: null,                 // 值
+        colProp: null,             // 项的值
+        val: null,                 // 单元格内容/列名
         isHead: undefined          // 当前目标是表头？
       },
       countCol: 0,                 // 新建列计数
@@ -102,7 +107,7 @@ export default {
       this.curTarget = {
         rowIdx: row.row_index,
         colIdx: column.index,
-        tag: column.label,
+        colProp: column.property,
         val: row[column.property],
         isHead: false
       }
@@ -119,7 +124,7 @@ export default {
       this.curTarget = {
         rowIdx: row ? row.row_index : null, // 目标行下标，表头无 row_index
         colIdx: column.index, // 目标项下标
-        tag: column.label, // 目标项的名称
+        colProp: column.property, // 目标项的名称
         val: row ? row[column.property] : column.label, // 目标值，表头记录名称
         isHead: !row
       }
@@ -134,20 +139,11 @@ export default {
 
     // 更改单元格内容/列名
     updTbCellOrHeader(val) {
-      if(!this.curTarget.isHead)
-        this.testDatas[this.curTarget.rowIdx][this.curTarget.tag] = val
-      else {
-        if(!val || this.curTarget.tag === val) return
-        if(this.testCols.includes(val)) {
-          this.$message.warning('请勿重名')
-          return
-        }
-        const oldCol = this.curTarget.tag
-        this.testDatas.forEach(p => {
-          p[val] = p[oldCol]
-          delete p[oldCol]
-        })
-        this.testCols[this.curTarget.colIdx] = val
+      if(!this.curTarget.isHead) // 更改单元格内容
+        this.testDatas[this.curTarget.rowIdx][this.curTarget.colProp] = val
+      else { // 更改列名
+        if(!val) return
+        this.columnList[this.curTarget.colIdx].label = val
       }
     },
 
@@ -156,7 +152,7 @@ export default {
       this.showMenu = false
       const idx = later ? this.curTarget.rowIdx + 1 : this.curTarget.rowIdx
       let obj = {}
-      this.testCols.forEach(p => obj[p] = '')
+      this.columnList.forEach(p => obj[p.prop] = '')
       this.testDatas.splice(idx, 0, obj)
     },
     // 删除行
@@ -168,15 +164,15 @@ export default {
     addColumn(later) {
       this.showMenu = false
       const idx = later ? this.curTarget.colIdx + 1 : this.curTarget.colIdx
-      const colStr = 'col_' + ++this.countCol
-      this.testCols.splice(idx, 0, colStr)
-      this.testDatas.forEach(p => p[colStr] = '')
+      const colStr = { prop: 'col_' + ++this.countCol, label: '' }
+      this.columnList.splice(idx, 0, colStr)
+      this.testDatas.forEach(p => p[colStr.prop] = '')
     },
     // 删除列
     delColumn() {
       this.showMenu = false
-      this.testCols.splice(this.curTarget.colIdx, 1)
-      this.testDatas.forEach(p => { delete p[this.curTarget.tag] })
+      this.columnList.splice(this.curTarget.colIdx, 1)
+      this.testDatas.forEach(p => { delete p[this.curTarget.colProp] })
     },
     // 添加表格行下标
     tableRowClassName({row, rowIndex}) {
