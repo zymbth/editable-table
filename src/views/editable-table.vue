@@ -11,31 +11,31 @@
       @row-contextmenu="rightClick"
       :row-class-name="tableRowClassName"
     >
-	    <el-table-column v-if="testCols.length > 0" type="index" label="编号" :width="50"/>
-	    <el-table-column v-for="(column, idx) in testCols" :key="column.col" :index="idx">
+	    <el-table-column v-if="columnList.length > 0" type="index" label="编号" :width="50"/>
+	    <el-table-column v-for="(col, idx) in columnList" :key="col.prop" :index="idx">
         <!--label-->
         <template #header>
-      	  <p v-show="column.show" @dblclick="column.show = false">
-          	{{column.txt}} 
-          	<i class="el-icon-edit-outline" @click="column.show = false"></i>
+      	  <p v-show="col.show" @dblclick="col.show = false">
+          	{{col.label}} 
+          	<i class="el-icon-edit-outline" @click="col.show = false"></i>
       	  </p>
       	  <el-input
           	size="mini"
-          	v-show="!column.show"
-          	v-model="column.txt"
-         	  @blur="column.show=true">
+          	v-show="!col.show"
+          	v-model="col.label"
+         	  @blur="col.show=true">
       	  </el-input>
       	</template>
       	<!--prop-->
       	<template #default="scope">
-      	  <p v-show="scope.row[column.col].show" @dblclick="scope.row[column.col].show = false">
-          	{{scope.row[column.col].content}} 
-          	<i class="el-icon-edit-outline" @click="scope.row[column.col].show=false"></i>
+      	  <p v-show="scope.row[col.prop].show" @dblclick="scope.row[col.prop].show = false">
+          	{{scope.row[col.prop].content}} 
+          	<i class="el-icon-edit-outline" @click="scope.row[col.prop].show=false"></i>
       	  </p>
           <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4 }"
-          	v-show="!scope.row[column.col].show"
-          	v-model="scope.row[column.col].content"
-         	  @blur="scope.row[column.col].show = true">
+          	v-show="!scope.row[col.prop].show"
+          	v-model="scope.row[col.prop].content"
+         	  @blur="scope.row[col.prop].show = true">
       	  </el-input>
       	</template>
       </el-table-column>
@@ -47,7 +47,7 @@
       <label>当前目标：</label>
       <p>{{JSON.stringify(curTarget)}}</p>
       <label>表头：</label>
-      <p v-for="col in testCols" :key="col.col">{{JSON.stringify(col)}}</p>
+      <p v-for="col in columnList" :key="col.prop">{{JSON.stringify(col)}}</p>
       <label>数据：</label>
       <ul>
         <li v-for="(data,idx) in testDatas" :key="idx">
@@ -86,11 +86,11 @@ export default {
   name: 'demo',
   data(){
     return{
-      testCols: [
-        { col: "name", txt: 'name', show: true },
-        { col: "age", txt: 'age', show: true },
-        { col: "city", txt: 'city', show: true },
-        { col: "tel", txt: 'tel', show: true }
+      columnList: [
+        { prop: "name", label: 'name', show: true },
+        { prop: "age", label: 'age', show: true },
+        { prop: "city", label: 'city', show: true },
+        { prop: "tel", label: 'tel', show: true }
       ],
       testDatas: [{
         name: { content: '张三', show: true },
@@ -140,8 +140,8 @@ export default {
       if(this.curTarget.rowIdx === null) return
       const idx = later ? this.curTarget.rowIdx + 1 : this.curTarget.rowIdx
       let obj = {}
-      this.testCols.forEach(p => {
-        obj[p.col] = { content: '', show: true }
+      this.columnList.forEach(p => {
+        obj[p.prop] = { content: '', show: true }
       })
       this.testDatas.splice(idx, 0, obj)
     },
@@ -154,18 +154,18 @@ export default {
     addColumn(later) {
       this.showMenu = false
       const idx = later ? this.curTarget.colIdx + 1 : this.curTarget.colIdx
-      let obj = { col: 'col_' + ++this.count_col, txt: '', show: true }
-      this.testCols.splice(idx, 0, obj)
+      let obj = { prop: 'col_' + ++this.count_col, label: '', show: true }
+      this.columnList.splice(idx, 0, obj)
       this.testDatas.forEach(p => {
         // vue3无需 this.$set(p, obj.col, { content: '', show: true }) // vue2中, 新增的对象无法被监听到
-        p[obj.col] = { content: '', show: true }
+        p[obj.prop] = { content: '', show: true }
       })
     },
     // 删除列
     delColumn() {
       this.showMenu = false
-      let colKey = this.testCols[this.curTarget.colIdx].col
-      this.testCols.splice(this.curTarget.colIdx, 1)
+      let colKey = this.columnList[this.curTarget.colIdx].prop
+      this.columnList.splice(this.curTarget.colIdx, 1)
       this.testDatas.forEach(p => delete p[colKey] )
     },
     // 添加表格行下标
