@@ -61,7 +61,7 @@
     <!-- 单元格/表头内容编辑框 -->
     <div v-show="showEditInput" id="editInput" @mouseleave="showEditInput=false">
       <el-input placeholder="请输入内容" v-model="curTarget.val" clearable @change="updTbCellOrHeader">
-        <template #prepend>{{curTarget.colProp}}</template>
+        <template #prepend>{{curColumn.label || curColumn.prop}}</template>
       </el-input>
     </div>
 
@@ -74,10 +74,10 @@ export default {
   data(){
     return{
       columnList: [
-        { prop: "name", label: 'name' },
-        { prop: "age", label: 'ageageageage' },
-        { prop: "city", label: 'city' },
-        { prop: "tel", label: 'tel' }
+        { prop: "name", label: '姓名' },
+        { prop: "age", label: '年龄' },
+        { prop: "city", label: '城市' },
+        { prop: "tel", label: '电话' }
       ],
       testDatas: [
         { name: '张三', age: 24, city: '广州', tel: '13312345678' },
@@ -89,11 +89,15 @@ export default {
       curTarget: {                 // 当前目标信息
         rowIdx: null,              // 行下标
         colIdx: null,              // 列下标
-        colProp: null,             // 项的值
         val: null,                 // 单元格内容/列名
         isHead: undefined          // 当前目标是表头？
       },
       countCol: 0,                 // 新建列计数
+    }
+  },
+  computed: {
+    curColumn () {
+      return this.columnList[this.curTarget.colIdx]??{}
     }
   },
   methods: {
@@ -107,7 +111,6 @@ export default {
       this.curTarget = {
         rowIdx: row.row_index,
         colIdx: column.index,
-        colProp: column.property,
         val: row[column.property],
         isHead: false
       }
@@ -124,7 +127,6 @@ export default {
       this.curTarget = {
         rowIdx: row ? row.row_index : null, // 目标行下标，表头无 row_index
         colIdx: column.index, // 目标项下标
-        colProp: column.property, // 目标项的名称
         val: row ? row[column.property] : column.label, // 目标值，表头记录名称
         isHead: !row
       }
@@ -140,7 +142,7 @@ export default {
     // 更改单元格内容/列名
     updTbCellOrHeader(val) {
       if(!this.curTarget.isHead) // 更改单元格内容
-        this.testDatas[this.curTarget.rowIdx][this.curTarget.colProp] = val
+        this.testDatas[this.curTarget.rowIdx][this.curColumn.prop] = val
       else { // 更改列名
         if(!val) return
         this.columnList[this.curTarget.colIdx].label = val
@@ -171,8 +173,8 @@ export default {
     // 删除列
     delColumn() {
       this.showMenu = false
+      this.testDatas.forEach(p => { delete p[this.curColumn.prop] })
       this.columnList.splice(this.curTarget.colIdx, 1)
-      this.testDatas.forEach(p => { delete p[this.curTarget.colProp] })
     },
     // 添加表格行下标
     tableRowClassName({row, rowIndex}) {

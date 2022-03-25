@@ -13,7 +13,7 @@
     >
 	    <el-table-column v-if="columnList.length > 0" type="index" label="编号" :width="50"/>
 	    <el-table-column v-for="(col, idx) in columnList" :key="col.prop" :index="idx">
-        <!--label-->
+        <!-- 自定义表头的内容 -->
         <template #header>
       	  <p v-show="col.show" @dblclick="col.show = false">
           	{{col.label}} 
@@ -26,7 +26,7 @@
          	  @blur="col.show=true">
       	  </el-input>
       	</template>
-      	<!--prop-->
+      	<!-- 自定义列的内容-->
       	<template #default="scope">
       	  <p v-show="scope.row[col.prop].show" @dblclick="scope.row[col.prop].show = false">
           	{{scope.row[col.prop].content}} 
@@ -87,10 +87,10 @@ export default {
   data(){
     return{
       columnList: [
-        { prop: "name", label: 'name', show: true },
-        { prop: "age", label: 'age', show: true },
-        { prop: "city", label: 'city', show: true },
-        { prop: "tel", label: 'tel', show: true }
+        { prop: "name", label: '姓名', show: true },
+        { prop: "age", label: '年龄', show: true },
+        { prop: "city", label: '城市', show: true },
+        { prop: "tel", label: '电话', show: true }
       ],
       testDatas: [{
         name: { content: '张三', show: true },
