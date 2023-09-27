@@ -44,5 +44,5 @@ module.exports = {
   devServer: {
     port: 7007,
   },
-  publicPath: '/'
+  publicPath: '/Editable_table/' // deploy to github page
 }
