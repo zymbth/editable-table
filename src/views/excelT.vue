@@ -42,19 +42,19 @@
         <el-button type="primary" size="small" @click="formExcelData">导出Excel</el-button>
       </div>
       <!--导入excel数据-->
-      <el-table :data="tableData" border style="width: 100%;margin-top:10px">
+      <el-table :data="tableData" border class="editable-table">
         <el-table-column v-if="tableData.length > 0" type="index" :label="'编号'" :width="50"/>
         <el-table-column v-for="(col, idx) in tableCols" :key="idx">
           <template #header>
-            <p v-show="tableCols[idx].show" @dblclick="tableCols[idx].show=false">{{col.txt}} 
-              <i class="el-icon-edit-outline" @click="tableCols[idx].show=false"></i></p><!--tableCols[idx].show=false-->
-            <el-input size="mini" v-show="!tableCols[idx].show" v-model="tableCols[idx].txt" @blur="tableCols[idx].show=true"></el-input>
+            <p v-show="col.show" @dblclick="$event => handleEdit(col, $event.target)">{{col.label}} 
+              <i class="el-icon-edit-outline" @click="$event => handleEdit(col, $event.target.parentNode)"></i></p>
+            <el-input size="mini" v-show="!col.show" v-model="col.label" @blur="col.show=true"></el-input>
           </template>
-          <template #default="scope">
-            <p v-show="scope.row[col.col].show" @dblclick="scope.row[col.col].show=false">{{scope.row[col.col].content}} 
-              <i class="el-icon-edit-outline" @click="scope.row[col.col].show=false"></i></p>
-            <el-input type="textarea" :autosize="{minRows:2,maxRows:4}" v-show="!scope.row[col.col].show"
-              v-model="scope.row[col.col].content" @blur="scope.row[col.col].show=true"></el-input>
+          <template #default="{ row }">
+            <p v-show="row[col.prop].show" @dblclick="$event => handleEdit(row[col.prop], $event.target)">{{row[col.prop].content}} 
+              <i class="el-icon-edit-outline" @click="$event => handleEdit(row[col.prop], $event.target.parentNode)"></i></p>
+            <el-input type="textarea" :autosize="{minRows:2,maxRows:4}" v-show="!row[col.prop].show"
+              v-model="row[col.prop].content" @blur="row[col.prop].show=true"></el-input>
           </template>
         </el-table-column>
       </el-table>
@@ -76,6 +76,19 @@ export default {
   }
   },
   methods: {
+    /**
+     * 表头/单元格编辑处理
+     *
+     * @param {Object} cell - The cell object to edit.
+     * @param {HTMLElement} pEl - The parent element of the cell.
+     */
+     handleEdit(cell, pEl) {
+      const editIputEl = Array.from(pEl.nextSibling.childNodes).find(n => ['INPUT','TEXTAREA'].includes(n.tagName))
+      cell.show = false
+      editIputEl && this.$nextTick(() => {
+        editIputEl.focus()
+      })
+    },
     /*导入excel*/
     httpRequest(e) {
       this.clearExcelTable()
@@ -118,8 +131,8 @@ export default {
         let obj = {}
         for(let x in p) {
           if(p.hasOwnProperty(x)) {
-            obj[x] = {'content': p[x], 'show': true}
-            if(idx == 0) this.tableCols.push({'col': x, 'txt':x, 'show': true})
+            obj[x] = { content: p[x], show: true}
+            if(idx == 0) this.tableCols.push({ prop: x, label: x, show: true})
           }
         }
         this.tableData.push(obj)
@@ -159,8 +172,8 @@ export default {
     formExcelData() {
       let tCols = [], tColsTemp = [], tDatas = []
       this.tableCols.forEach(p => {
-        tColsTemp.push(p.col)
-        tCols.push(p.txt)
+        tColsTemp.push(p.prop)
+        tCols.push(p.label)
       })
       this.tableData.forEach(p => {
         let temp = []
@@ -238,5 +251,15 @@ export default {
   max-width: 130px;
   float: right;
   padding-bottom: 10px;
+}
+.editable-table.el-table:deep {
+  width: 100%;
+  margin-top:10px;
+  .cell {
+    padding: 0 4px;
+  }
+  .el-textarea__inner {
+    padding: 2px 4px;
+  }
 }
 </style>
