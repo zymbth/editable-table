@@ -1,13 +1,13 @@
 <template>
-  <div id="hello">
-    <h2 style="margin:0;text-align:center;">测试表</h2>
+  <div class="tb-container" ref="tbContainerRef">
+    <h2 style="margin:0;text-align:center;">测试表 - 可编辑表格</h2>
 	
 	  <!-- 表格 -->
   	<el-table
       :data="testDatas"
       border
       style="width: 100%;margin-top:10px"
-      @header-contextmenu="(column, event) => rightClick(null, column, event)"
+      @header-contextmenu="(column, $event) => rightClick(null, column, $event)"
       @row-contextmenu="rightClick"
       :row-class-name="tableRowClassName"
     >
@@ -15,9 +15,9 @@
 	    <el-table-column v-for="(col, idx) in columnList" :key="col.prop" :index="idx">
         <!-- 自定义表头的内容 -->
         <template #header>
-      	  <p v-show="col.show" @dblclick="col.show = false">
+      	  <p v-show="col.show" @dblclick="$event => handleEdit(col, $event.target)">
           	{{col.label}} 
-          	<i class="el-icon-edit-outline" @click="col.show = false"></i>
+          	<i class="el-icon-edit-outline" @click="$event => handleEdit(col, $event.target.parentNode)"></i>
       	  </p>
       	  <el-input
           	size="mini"
@@ -27,15 +27,15 @@
       	  </el-input>
       	</template>
       	<!-- 自定义列的内容-->
-      	<template #default="scope">
-      	  <p v-show="scope.row[col.prop].show" @dblclick="scope.row[col.prop].show = false">
-          	{{scope.row[col.prop].content}} 
-          	<i class="el-icon-edit-outline" @click="scope.row[col.prop].show=false"></i>
+      	<template #default="{ row }">
+      	  <p v-show="row[col.prop].show" @dblclick="$event => handleEdit(row[col.prop], $event.target)">
+          	{{row[col.prop].content}} 
+          	<i class="el-icon-edit-outline" @click="$event => handleEdit(row[col.prop], $event.target.parentNode)"></i>
       	  </p>
           <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4 }"
-          	v-show="!scope.row[col.prop].show"
-          	v-model="scope.row[col.prop].content"
-         	  @blur="scope.row[col.prop].show = true">
+          	v-show="!row[col.prop].show"
+          	v-model="row[col.prop].content"
+         	  @blur="row[col.prop].show = true">
       	  </el-input>
       	</template>
       </el-table-column>
@@ -113,15 +113,40 @@ export default {
     }
   },
   methods:{
-    rightClick(row, column, event) {
+    /**
+     * 表头/单元格编辑处理
+     *
+     * @param {Object} cell - The cell object to edit.
+     * @param {HTMLElement} pEl - The parent element of the cell.
+     */
+    handleEdit(cell, pEl) {
+      const editIputEl = Array.from(pEl.nextSibling.childNodes).find(n => ['INPUT','TEXTAREA'].includes(n.tagName))
+      cell.show = false
+      editIputEl && this.$nextTick(() => {
+        editIputEl.focus()
+      })
+    },
+    /**
+     * 右键事件处理，仅作参考
+     *
+     * @param {Object} row - The row object.
+     * @param {Object} column - The column object.
+     * @param {Event} $event - The right click event.
+     */
+    rightClick(row, column, $event) {
       // 阻止浏览器自带的右键菜单弹出
-      event.preventDefault() // window.event.returnValue = false
+      $event.preventDefault()
       if(column.index == null) return
+      // 表格容器的位置
+      const { x: tbX, y: tbY } = this.$refs.tbContainerRef.getBoundingClientRect()
+      // 当前鼠标位置
+      const { x: pX, y: pY } = $event
       // 定位菜单
-      let ele = document.getElementById('contextmenu')
-      ele.style.top = event.clientY - 25 + 'px'
-      ele.style.left = event.clientX - 25 + 'px'
-      if(window.innerWidth - 140 < event.clientX) {
+      const ele = document.getElementById('contextmenu')
+      ele.style.top = pY - tbY - 6 + 'px'
+      ele.style.left = pX - tbX - 6 + 'px'
+      // 边界调整
+      if(window.innerWidth - 140 < pX - tbX) {
         ele.style.left = 'unset'
         ele.style.right = 0
       }
@@ -177,7 +202,7 @@ export default {
 </script>
   
 <style lang="scss" scoped>
-#hello {position: relative;}
+.tb-container {position: relative;}
 #contextmenu {
   position:absolute;
   top: 0;
