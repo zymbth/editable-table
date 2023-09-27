@@ -1,7 +1,7 @@
 <template>
   <!-- 可编辑表格V2 -->
-  <div id="hello">
-    <h2 style="margin:0;text-align:center;">测试表</h2>
+  <div class="tb-container" ref="tbContainerRef">
+    <h2 style="margin:0;text-align:center;">测试表 - 可编辑表格</h2>
 
     <!-- 表格 -->
     <el-table
@@ -9,7 +9,7 @@
       border
       style="width: 100%;margin-top:10px"
       @cell-dblclick="cellDblclick"
-      @header-contextmenu="(column, event) => rightClick(null, column, event)"
+      @header-contextmenu="(column, $event) => rightClick(null, column, $event)"
       @row-contextmenu="rightClick"
       :row-class-name="tableRowClassName"
     >
@@ -102,10 +102,10 @@ export default {
   },
   methods: {
     // 单元格双击事件 - 更改单元格数值
-    cellDblclick(row, column, cell, event) {
+    cellDblclick(row, column, cell, $event) {
       this.showEditInput = false
       if(column.index == null) return
-      this.locateMenuOrEditInput('editInput', 200, event) // 编辑框定位
+      this.locateMenuOrEditInput('editInput', 200, $event) // 编辑框定位
       this.showEditInput = true
       // 当前目标
       this.curTarget = {
@@ -116,12 +116,12 @@ export default {
       }
     },
     // 单元格/表头右击事件 - 打开菜单
-    rightClick(row, column, event) {
+    rightClick(row, column, $event) {
       // 阻止浏览器自带的右键菜单弹出
-      event.preventDefault() // window.event.returnValue = false
+      $event.preventDefault()
       this.showMenu = false
       if(column.index == null) return
-      this.locateMenuOrEditInput('contextmenu', 140, event) // 菜单定位
+      this.locateMenuOrEditInput('contextmenu', 140, $event) // 菜单定位
       this.showMenu = true
       // 当前目标
       this.curTarget = {
@@ -181,11 +181,15 @@ export default {
       row.row_index = rowIndex
     },
     // 定位菜单/编辑框
-    locateMenuOrEditInput(eleId, eleWidth, event) {
-      let ele = document.getElementById(eleId)
-      ele.style.top = event.clientY - 25 + 'px'
-      ele.style.left = event.clientX - 25 + 'px'
-      if(window.innerWidth - eleWidth < event.clientX) {
+    locateMenuOrEditInput(eleId, eleWidth, $event) {
+      // 表格容器的位置
+      const { x: tbX, y: tbY } = this.$refs.tbContainerRef.getBoundingClientRect()
+      // 当前鼠标位置
+      const { x: pX, y: pY } = $event
+      const ele = document.getElementById(eleId)
+      ele.style.top = pY - tbY - 6 + 'px'
+      ele.style.left = pX - tbX - 6 + 'px'
+      if(window.innerWidth - eleWidth < pX - tbX) {
         ele.style.left = 'unset'
         ele.style.right = 0
       }
@@ -195,7 +199,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#hello {position: relative;}
+.tb-container {position: relative;}
 #contextmenu {
   position:absolute;
   top: 0;
