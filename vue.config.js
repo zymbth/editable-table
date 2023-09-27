@@ -6,8 +6,9 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-module.exports = {
-  configureWebpack:{
+let configureWebpack = {}
+if(process.env.NODE_ENV === 'production') {
+  configureWebpack = {
     externals: {
       'vue': 'Vue',
       'vue-router': 'VueRouter',
@@ -35,12 +36,13 @@ module.exports = {
         parallel: true
       })
     ]
-  },
+  }
+}
+module.exports = {
+  configureWebpack,
   productionSourceMap: false,
   devServer: {
     port: 7007,
   },
-  publicPath: process.env.NODE_ENV === 'production'
-  	? '/myvuetb/'
-  	: '/'
+  publicPath: '/'
 }
