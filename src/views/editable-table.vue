@@ -114,7 +114,7 @@ export default {
   },
   methods:{
     /**
-     * 表头/单元格编辑处理
+     * 表头/单元格编辑处理：切换编辑输入框/文本输入框，自动聚焦
      *
      * @param {Object} cell - The cell object to edit.
      * @param {HTMLElement} pEl - The parent element of the cell.
@@ -128,6 +128,7 @@ export default {
     },
     /**
      * 右键事件处理，仅作参考
+     * 菜单定位方案：相对表格容器进行定位
      *
      * @param {Object} row - The row object.
      * @param {Object} column - The column object.

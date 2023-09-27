@@ -115,7 +115,14 @@ export default {
         isHead: false
       }
     },
-    // 单元格/表头右击事件 - 打开菜单
+    /**
+     * 单元格/表头右击事件处理，仅作参考
+     * 菜单定位方案：相对表格容器进行定位
+     *
+     * @param {Object} row - The row object.
+     * @param {Object} column - The column object.
+     * @param {Event} $event - The right click event.
+     */
     rightClick(row, column, $event) {
       // 阻止浏览器自带的右键菜单弹出
       $event.preventDefault()
