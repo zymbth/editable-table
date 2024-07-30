@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import XLSX from 'xlsx'
+import * as XLSX from 'xlsx'
 
 export default {
   data () {

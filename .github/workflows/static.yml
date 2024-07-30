@@ -43,7 +43,7 @@ jobs:
         run: yarn install # npm ci or pnpm install / yarn install / bun install
       - name: Build Project
         run: |
-          yarn build # npm run build or pnpm build / yarn build / bun run build
+          yarn build:git # npm run build or pnpm build / yarn build / bun run build
           touch dist/.nojekyll
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2

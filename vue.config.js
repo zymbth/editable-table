@@ -7,13 +7,13 @@ function resolve(dir) {
 }
 
 let configureWebpack = {}
-if(process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
   configureWebpack = {
     externals: {
-      'vue': 'Vue',
+      vue: 'Vue',
       'vue-router': 'VueRouter',
       'element-plus': 'ElementPlus',
-      'xlsx': 'XLSX'
+      xlsx: 'XLSX',
     },
     plugins: [
       new CompressionWebpackPlugin({
@@ -21,7 +21,7 @@ if(process.env.NODE_ENV === 'production') {
         algorithm: 'gzip',
         test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
         threshold: 10240,
-        minRatio: 0.8
+        minRatio: 0.8,
       }),
       new UglifyJsPlugin({
         uglifyOptions: {
@@ -29,13 +29,13 @@ if(process.env.NODE_ENV === 'production') {
             // warnings: false,
             drop_debugger: true,
             drop_console: true,
-            pure_funcs: ["console.log"]
-          }
+            pure_funcs: ['console.log'],
+          },
         },
         sourceMap: false,
-        parallel: true
-      })
-    ]
+        parallel: true,
+      }),
+    ],
   }
 }
 module.exports = {
@@ -44,5 +44,5 @@ module.exports = {
   devServer: {
     port: 7007,
   },
-  publicPath: '/editable-table/' // deploy to github page
+  publicPath: process.env.DEPLOY_ENV ? '/editable-table/' : '/', // deploy to github page
 }
